@@ -70,6 +70,7 @@ class Controller
         $viewFolder      = $this->urlConstructor([dirname(dirname($calledClassFile)), 'Views']);
 
         extract($data);
+        $router = $this->app->getRooter();
 
         ob_start();
         require($this->urlConstructor([$viewFolder, $this->getClassName(), $filename]));

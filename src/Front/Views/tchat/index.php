@@ -9,6 +9,9 @@
 
 <?php if ($displayForm): ?>
     <h1>Tchat << <?php echo sprintf('%s', $user->username) ?> >></h1>
+
+    <a href="<?php echo $router->url('user_logout') ?>">Logout</a>
+
 <ul id="tchat_content" style="width: 100%; height:300px; overflow:scroll; border: solid 1px #000000; ">
     <?php endif ?>
 
