@@ -67,4 +67,16 @@ class App
         return $this->session;
     }
 
+
+    /**
+     * @param $name
+     *
+     * @return mixed
+     */
+    public function getRepository($name)
+    {
+        $className = sprintf("Core\\Repository\\%sRepository", ucfirst(strtolower($name)));
+
+        return new $className($this);
+    }
 }

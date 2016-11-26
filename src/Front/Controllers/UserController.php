@@ -9,6 +9,7 @@
 namespace Front\Controllers;
 
 use Core\Controllers\Controller;
+use Core\Repository\UserRepository;
 
 /**
  * Class UserController
@@ -25,29 +26,52 @@ class UserController extends Controller
      */
     public function loginAction(array $params = [])
     {
+        $data =  [];
 
-        $errors = [];
+        $userRepository = $this->app->getRepository('user');
+
+        if ($this->session->has('user')) {
+            $homepage = $this->router->url('home_page');
+            header("Location: $homepage");
+        }
+
+        if (isset($_POST['user'])) {
+            $isValide   = false;
+            $postedUser = $_POST['user'];
+
+            $postedUser['password'] = sha1($postedUser['password']);
+
+            $bddUser = $userRepository->findOneByCriteria(['username' => $postedUser['username']]);
+
+            if ($bddUser) {
+                if ($bddUser->password === $postedUser['password']) {
+                    $isValide = true;
+                    unset($postedUser['password']);
+                    unset($postedUser['username']);
+                    $userRepository->update($postedUser, ['id' => $bddUser->id]);
+                }else{
+                    $data['error'] = 'Invalid password';
+                    $data['loginUser'] = $postedUser;
+                    goto fin_de_scripte;
+                }
+            } else {
+                $bddUser  = $userRepository->insert($postedUser);
+                $isValide = true;
+            }
+
+            if ($isValide) {
+                $this->session->set('user', $bddUser);
+            }
+        }
 
         if ($this->session->has('user')) {
             $homepage = $this->router->url('api_room_tchat');
             header("Location: $homepage");
         }
 
-        if (isset($_POST['user'])) {
-            $postedUser = $_POST['user'];
+        fin_de_scripte:
 
-                $this->session->set('user', $postedUser);
-
-            if ($this->session->has('user')) {
-                $homepage = $this->router->url('api_room_tchat');
-                header("Location: $homepage");
-            }
-        }
-        $data = [
-            'action' => $homepage = $this->router->url('user_login'),
-            'errors' => $errors
-        ];
-
+        $data['action'] = $homepage = $this->router->url('user_login');
         $this->render('login.php', $data);
     }
 
@@ -61,6 +85,15 @@ class UserController extends Controller
     {
         $this->session->close();
         $homepage = $this->router->url('user_login');
+
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->app->getRepository('user');
+
+        $criteria['id'] = $this->app->getSession()->get('user')->id;
+        $data['online'] = 0;
+        $userRepository->update($data, $criteria);
 
         header("Location: $homepage");
     }
