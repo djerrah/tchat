@@ -9,6 +9,7 @@
 namespace Config;
 
 use Core\Router\Router;
+use Core\Session\Session;
 
 /**
  * Class App
@@ -24,6 +25,11 @@ class App
     private $router;
 
     /**
+     * @var Session
+     */
+    private $session;
+
+    /**
      *
      */
     public function __construct()
@@ -31,6 +37,9 @@ class App
         define('ROOT_DIR', dirname(__DIR__));
 
         $this->router  = new Router();
+        $this->session = new Session();
+        $this->session->start();
+
     }
 
     /**
@@ -49,4 +58,13 @@ class App
     {
         return $this->router->run($this);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSession()
+    {
+        return $this->session;
+    }
+
 }

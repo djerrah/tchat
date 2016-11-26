@@ -27,34 +27,33 @@
             </li>
         </ul>
 
-        <ul style="clear: both;">
+        <ul style="width:100%; clear: both;">
             <li>
+                <label>Civilité</label>
                 Monsieur : <input type="checkbox" name="user[gender]" value="Monsieur">
                 Madame : <input type="checkbox" name="user[gender]" value="Madame">
             </li>
         </ul>
 
-        <ul style="clear: both;">
+        <ul style="width:100%; clear: both;">
             <li>
-                Age : <input type="text" name="user[age]" value="" placeholder="19">
+                <label>Nom</label>
+                <input type="text" name="user[last_name]" value="" placeholder="nom">
+            </li>
+            <li>
+                <label>Prénom</label>
+                <input type="text" name="user[first_name]" value="" placeholder="prénom">
             </li>
         </ul>
 
-        <ul style="clear: both;">
+        <ul style="width:100%; clear: both;">
             <li>
-                Nom: <input type="text" name="user[last_name]" value="" placeholder="nom">
+                <label>Age</label>
+                <input type="text" name="user[age]" value="" placeholder="19">
             </li>
-        </ul>
-
-        <ul style="clear: both;">
             <li>
-                Prénom: <input type="text" name="user[first_name]" value="" placeholder="prénom">
-            </li>
-        </ul>
-
-        <ul style="clear: both;">
-            <li>
-                Email: <input type="text" name="user[email]" value="" placeholder="yourname@domain.com">
+                <label>Email</label>
+                <input type="text" name="user[email]" value="" placeholder="yourname@domain.com">
             </li>
         </ul>
     </form>

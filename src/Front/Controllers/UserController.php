@@ -26,7 +26,27 @@ class UserController extends Controller
     public function loginAction(array $params = [])
     {
 
-        $data  =[];
+        $errors = [];
+
+        if ($this->session->has('user')) {
+            $homepage = $this->router->url('api_room_tchat');
+            header("Location: $homepage");
+        }
+
+        if (isset($_POST['user'])) {
+            $postedUser = $_POST['user'];
+
+                $this->session->set('user', $postedUser);
+
+            if ($this->session->has('user')) {
+                $homepage = $this->router->url('api_room_tchat');
+                header("Location: $homepage");
+            }
+        }
+        $data = [
+            'action' => $homepage = $this->router->url('user_login'),
+            'errors' => $errors
+        ];
 
         $this->render('login.php', $data);
     }
@@ -39,6 +59,7 @@ class UserController extends Controller
      */
     public function logoutAction(array $params = [])
     {
+        $this->session->close();
         $homepage = $this->router->url('user_login');
 
         header("Location: $homepage");

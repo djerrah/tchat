@@ -26,6 +26,8 @@ class TchatController extends Controller
     public function indexAction(array $params = [])
     {
 
+        $this->needAuthenticated();
+
         $data = [
             'tchats' =>[
 

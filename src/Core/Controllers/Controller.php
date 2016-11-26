@@ -10,6 +10,7 @@ namespace Core\Controllers;
 
 use Core\Router\Router;
 use Config\App;
+use Core\Session\Session;
 
 /**
  * Class Controller
@@ -22,6 +23,11 @@ class Controller
      * @var Router
      */
     protected $router;
+
+    /**
+     * @var Session
+     */
+    protected $session;
 
     /**
      * @var App
@@ -40,6 +46,7 @@ class Controller
     {
         $this->app = $app;
         $this->router  = $app->getRooter();
+        $this->session = $app->getSession();
 
     }
 
@@ -85,5 +92,18 @@ class Controller
     private function urlConstructor($paths)
     {
         return implode(DIRECTORY_SEPARATOR, $paths);
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    protected function needAuthenticated()
+    {
+        if (!$this->session->has('user')) {
+            $homepage = $this->router->url('user_login');
+            header("Location: $homepage");
+        }
+
     }
 }
