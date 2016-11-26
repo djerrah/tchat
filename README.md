@@ -1,8 +1,14 @@
 init project
 
+##Requirments:##
 
+    - Activation du mod rewrite de apache2
+    - composer
+    - bower
+    
 ##VHOST example:##
 
+```
 <VirtualHost *:80>
  ServerName tchat.local
 
@@ -24,6 +30,16 @@ init project
       </IfModule>
     </Directory>
 </VirtualHost>
-
+```
 ##lancer:##
-composer dump-autoload  -o
+    -   composer dump-autoload  -o
+    -   bower install
+
+
+
+
+##Les Routes:##
+
+    -   /tchat
+    -   /login
+    -   /logout

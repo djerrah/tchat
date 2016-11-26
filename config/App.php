@@ -8,6 +8,8 @@
 
 namespace Config;
 
+use Core\Router\Router;
+
 /**
  * Class App
  *
@@ -15,11 +17,29 @@ namespace Config;
  */
 class App 
 {
+
+    /**
+     * @var Router
+     */
+    private $router;
+
     /**
      *
      */
     public function __construct()
     {
+        define('ROOT_DIR', dirname(__DIR__));
+
+        $this->router  = new Router();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRooter()
+    {
+        return $this->router;
+
     }
 
     /**
@@ -27,6 +47,6 @@ class App
      */
     public function getResponse()
     {
-        var_dump('test');
+        return $this->router->run($this);
     }
 }

@@ -1,0 +1,13 @@
+{
+  "name": "tchat",
+  "version": "1.0.0",
+  "private": true,
+  "authors": [
+    "djerrah <s.djerrah@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "jquery-ui": "~1.11.4"
+  }
+}
