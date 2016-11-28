@@ -33,6 +33,7 @@ init project
 ```
 ##lancer:##
     -   composer dump-autoload  -o
+    -   composer install
     -   bower install
 
 

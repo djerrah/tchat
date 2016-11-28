@@ -15,13 +15,13 @@
 <ul id="tchat_content" style="width: 100%; height:300px; overflow:scroll; border: solid 1px #000000; ">
     <?php endif ?>
 
-    <?php foreach ($tchats as $tchat): ?>
-        <li>
-            <span style="background-color: <?php if ($tchat->online): ?>#419641<?php else: ?>n#419643<?php endif ?>">
-                <b><?php echo sprintf('%s', $tchat->username) ?></b>
+    <?php foreach ($tchats as $tchat):?>
+        <li id="message_<?php echo $tchat->message_id; ?>" data-id="<?php echo $tchat->message_id; ?>" title="<?php echo $tchat->message_created_at; ?>">
+            <span style="background-color: <?php if ($tchat->user_online): ?>#419641<?php else: ?>n#419643<?php endif ?>">
+                <b><?php echo sprintf('%s', $tchat->user_username) ?></b>
             </span>
             :
-            <?php echo html_entity_decode($tchat->body); ?>
+            <?php echo htmlentities($tchat->message_body) ?>
         </li>
     <?php endforeach ?>
 

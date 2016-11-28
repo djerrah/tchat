@@ -8,6 +8,7 @@
 
 namespace Core\Router;
 
+use Back\Controllers\ApiController;
 use Config\App;
 use Front\Controllers\TchatController;
 use Front\Controllers\UserController;
@@ -18,7 +19,7 @@ use Front\Controllers\FrontController;
  *
  * @package Core\Router
  */
-class Router 
+class Router
 {
     /**
      * @var
@@ -61,6 +62,15 @@ class Router
         #TchatController
         $this->get('api_room_tchat', '/tchat', TchatController::class, 'indexAction');
         $this->post('api_room_tchat', '/tchat', TchatController::class, 'indexAction');
+        $this
+            ->get('api_room_tchat_front_refresh', '/refresh/:lastId', TchatController::class, 'refreshAction')
+            ->with('lastId', '[\d]+');
+
+        $this
+            ->get('api_room_tchat_refresh', '/api/tchat/:user-:lastId/:date', ApiController::class, 'refreshAction')
+            ->with('user', '[\d]+')
+            ->with('lastId', '[\d]+')
+            ->with('date', '[\d]+');
     }
 
     /**
@@ -71,7 +81,7 @@ class Router
      *
      * @return Route
      */
-    public function gelete($name, $path, $controller, $action)
+    public function delete($name, $path, $controller, $action)
     {
         return $this->add($name, 'DELETE', $path, $controller, $action);
     }
@@ -158,12 +168,22 @@ class Router
      * @return mixed
      * @throws \Exception
      */
-    public function url($name, array $parameters = [])
+    public function url($name, array $parameters = [], $fullUrl = false)
     {
         if (!isset($this->names[$name])) {
             throw new \Exception(sprintf('No route match found with name = %s', $name));
         }
 
-        return sprintf('/%s', $this->names[$name]->getUrl($parameters));
+        $path = sprintf("/%s", $this->names[$name]->getUrl($parameters));
+
+        if ($fullUrl) {
+            $serverName = $_SERVER['SERVER_NAME'];
+            $scheme     = $_SERVER['REQUEST_SCHEME'];
+
+            $path = sprintf("%s://%s%s", $scheme, $serverName, $path);
+        }
+
+        return $path;
+
     }
 }

@@ -17,8 +17,19 @@ use Core\Session\Session;
  *
  * @package Core\Controllers
  */
-class Controller 
+class Controller
 {
+    /**
+     * @var string
+     */
+    protected $apiUser = 'api_user';
+
+    /**
+     * @var string
+     */
+    protected $apiPassword = 'api_password';
+
+
     /**
      * @var Router
      */
@@ -44,7 +55,7 @@ class Controller
      */
     public function __construct(App $app)
     {
-        $this->app = $app;
+        $this->app     = $app;
         $this->router  = $app->getRooter();
         $this->session = $app->getSession();
 
@@ -106,5 +117,31 @@ class Controller
             header("Location: $homepage");
         }
 
+    }
+
+    /**
+     * @return array
+     */
+    protected function generateXWSSEHeaders()
+    {
+        $apiToken = '7d389e70-6d4a-4242-81b9-ab926e8d64b7';
+        $apiUser  = $this->apiUser;
+        $nonce    = uniqid();
+        $created  = date('c');
+        $digest   = base64_encode(sha1(base64_decode($nonce) . $created . $this->apiPassword, true));
+
+        $wsseAuthorization = "WSSE profile=\"$apiToken\"\n";
+        $wsseHeader        = sprintf(
+            'UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"',
+            $apiUser,
+            $digest,
+            $nonce,
+            $created
+        );
+
+        return [
+            'X-WSSE'        => $wsseHeader,
+            'Authorization' => $wsseAuthorization,
+        ];
     }
 }

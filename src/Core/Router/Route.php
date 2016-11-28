@@ -62,10 +62,8 @@ class Route
      */
     public function match($url)
     {
-
         $url  = trim($url, '/');
         $path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $this->path);
-
 
         if (count($this->params)) {
             $paramNames = array_keys($this->params);
@@ -136,7 +134,7 @@ class Route
         $path      = $this->path;
         $urlParams = "?";
         foreach ($params as $key => $param) {
-            if (preg_match(":$key", $path)) {
+            if (preg_match("/:$key/i", $path)) {
                 $path = str_replace(":$key", $param, $path);
                 unset($params[$key]);
             } else {

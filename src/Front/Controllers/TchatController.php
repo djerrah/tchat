@@ -11,6 +11,7 @@ namespace Front\Controllers;
 use Core\Controllers\Controller;
 use Core\Repository\MessageRepository;
 use Core\Repository\UserRepository;
+use Curl\Curl;
 
 /**
  * Class TchatController
@@ -51,11 +52,17 @@ class TchatController extends Controller
             }
         }
 
-        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
+                $_SERVER['HTTP_X_REQUESTED_WITH']
+            ) == 'xmlhttprequest'
+        ) {
             $this->layout = false;
         }
 
-        $messages = $messageRepository->findAll();
+        $lastId   = 0;
+        $orderBy  = ['created_at' => 'DESC'];
+        $limite   = 15;
+        $messages = $messageRepository->findAll($lastId, $orderBy, $limite);
 
         uasort(
             $messages,
@@ -64,7 +71,7 @@ class TchatController extends Controller
                     return 0;
                 }
 
-                return ($a->created_at < $b->created_at) ? -1 : 1;
+                return ($a->message_created_at < $b->message_created_at) ? -1 : 1;
             }
         );
 
@@ -76,5 +83,37 @@ class TchatController extends Controller
         ];
 
         $this->render('index.php', $data);
+    }
+
+    /**
+     * @param array $params
+     * /refresh
+     *
+     * @throws \Exception
+     */
+    public function refreshAction(array $params = [])
+    {
+        $lastId = $params['lastId'];
+
+        $this->needAuthenticated();
+
+        $curl = new  Curl();
+
+        foreach ($this->generateXWSSEHeaders() as $key => $header) {
+            $curl->setHeader($key, $header);
+        }
+
+        $user = $this->session->get('user');
+
+        $curlParams = ['user' => $user->id, 'date' => time(), 'lastId' => $lastId];
+
+        $url = $this->router->url('api_room_tchat_refresh', $curlParams, true);
+
+        $curl->get($url);
+
+        if ($curl->http_status_code === 200) {
+            echo $curl->response;
+            exit;
+        }
     }
 }

@@ -6,7 +6,9 @@
             "email": "s.djerrah@gmail.com"
         }
     ],
-    "require": {},
+    "require": {
+        "curl/curl": "^1.5"
+    },
     "autoload": {
         "psr-4": {
             "": "src/"
