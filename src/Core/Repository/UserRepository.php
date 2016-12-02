@@ -44,8 +44,10 @@ class UserRepository extends BaseRepository
     public function update(array $data, array $criteria)
     {
         $data['last_login'] = date('Y-m-d H:i:s');
-        $data['online']     = 1;
 
+        if(!isset($data['online'])) {
+            $data['online'] = 1;
+        }
         return parent::update($data, $criteria);
     }
 }

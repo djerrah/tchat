@@ -1,0 +1,11 @@
+{% for tchat in tchats %}
+    {% set color = (tchat.user_online)? '#419641' : '#f4425c' %}
+    <li id="{{- 'message_'~tchat.message_id -}}" data-id="{{- tchat.message_id -}}"
+        title="{{ tchat.message_created_at }}">
+            <span class="users user-{{- tchat.user_id -}}" style="background-color: {{ color }}">
+                <b>{{ tchat.user_username }}</b>
+            </span>
+        :
+        {{ tchat.message_body|escape }}
+    </li>
+{% endfor %}

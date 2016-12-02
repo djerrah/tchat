@@ -7,7 +7,8 @@
         }
     ],
     "require": {
-        "curl/curl": "^1.5"
+        "curl/curl": "^1.5",
+        "twig/twig": "~1.0"
     },
     "autoload": {
         "psr-4": {

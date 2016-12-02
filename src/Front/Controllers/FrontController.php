@@ -29,22 +29,11 @@ class FrontController extends Controller
 
         $this->needAuthenticated();
 
-        $curl = new  Curl();
+        $data = [
+            'user' => $this->session->get('user')
+        ];
 
-        foreach($this->generateXWSSEHeaders() as $key => $header) {
-            $curl->setHeader($key, $header);
-        }
-
-        $user = $this->session->get('user');
-
-        $curlParams = ['user'=>$user->id, 'date'=>time()];
-
-        $url = $this->router->url('api_room_tchat_refresh', $curlParams, true);
-
-        $curl->get($url);
-        $response = $curl->response;
-
-        var_dump(json_decode($response,true));
+        $this->renderTwig('index.html.twig', $data);
     }
 
 }

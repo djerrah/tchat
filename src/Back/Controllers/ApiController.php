@@ -22,11 +22,11 @@ class ApiController extends BaseController
 {
     /**
      * @param array $params
+     * @param bool  $getArrayData
      *
-     * @return bool
-     * @throws \Exception
+     * @return array
      */
-    public function refreshAction(array $params = [])
+    public function refreshMessagesAction(array $params = [], $getArrayData = false)
     {
         $this->needAuthenticated();
 
@@ -45,25 +45,9 @@ class ApiController extends BaseController
         $data['online'] = 1;
         $userRepository->update($data, $criteria);
 
-        if (isset($_POST['tchat'])) {
-            $tchat = $_POST['tchat'];
-            if (isset($tchat['body']) && trim($tchat['body'])) {
-                $messageRepository->insert($tchat);
-            }
-        }
-
-        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                $_SERVER['HTTP_X_REQUESTED_WITH']
-            ) == 'xmlhttprequest'
-        ) {
-            $this->layout = false;
-        }
-
-        $messages = [];
-
-        $lastId=$params['lastId'];
-        $orderBy=['created_at', 'ASC'];
-        $limite = 15;
+        $lastId   = $params['lastId'];
+        $orderBy  = ['created_at', 'ASC'];
+        $limite   = 15;
         $messages = $messageRepository->findAll($lastId, $orderBy, $limite);
 
         foreach ($messageRepository->findAll($lastId) as $message) {
@@ -85,7 +69,44 @@ class ApiController extends BaseController
             }
         );
 
+        if ($getArrayData) {
+            return $messages;
+        }
+
         echo json_encode($messages);
+        exit;
+    }
+
+    /**
+     * @param array $params
+     * @param bool  $getArrayData
+     *
+     * @return array
+     */
+    public function refreshUsersAction(array $params = [], $getArrayData=false)
+    {
+        $this->needAuthenticated();
+
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->app->getRepository('user');
+
+        $users = [];
+
+        foreach ($userRepository->findByCriteria(['online'=>1]) as $user) {
+            $users[] = [
+                'id'     => $user->id,
+                'online' => $user->online,
+            ];
+        }
+
+
+        if ($getArrayData) {
+            return $users;
+        }
+
+        echo json_encode($users);
         exit;
     }
 

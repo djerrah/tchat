@@ -1,0 +1,40 @@
+{% extends "layout/default.html.twig" %}
+
+{% block body %}
+<table>
+    <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ user.id }}</td>
+        </tr>
+        <tr>
+            <th>Civilité</th>
+            <td>{{ user.gender }}</td>
+        </tr>
+        <tr>
+            <th>Nom</th>
+            <td>{{ user.first_name }}</td>
+        </tr>
+        <tr>
+            <th>Prénom</th>
+            <td>{{ user.last_name }}</td>
+        </tr>
+        <tr>
+            <th>Age</th>
+            <td>{{ user.age }}</td>
+        </tr>
+        <tr>
+            <th>Username</th>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th>Date de dernière connexion</th>
+            <td>{{ user.last_login.format('d/m/Y H:i:s')}}</td>
+        </tr>
+    </tbody>
+</table>
+{% endblock body %}

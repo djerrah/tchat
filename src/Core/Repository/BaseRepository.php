@@ -204,8 +204,8 @@ class BaseRepository
 
 
         foreach ($data as $key => $value) {
-            if (trim($value)) {
-                $updateFields[] = sprintf("`%s`='%s'", $key, trim($value));
+            if (trim($value) ||$key == 'online') {
+            $updateFields[] = sprintf("`%s`='%s'", $key, trim($value));
             }
         }
 

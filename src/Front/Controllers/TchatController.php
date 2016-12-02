@@ -8,6 +8,7 @@
 
 namespace Front\Controllers;
 
+use Back\Controllers\ApiController;
 use Core\Controllers\Controller;
 use Core\Repository\MessageRepository;
 use Core\Repository\UserRepository;
@@ -76,13 +77,18 @@ class TchatController extends Controller
         );
 
         $data = [
-            'displayForm' => (($this->layout) ? true : false),
-            'tchats'      => $messages,
-            'user'        => $this->session->get('user'),
-            'action'      => $this->router->url('api_room_tchat'),
+            'tchats' => $messages,
+            'user'   => $this->session->get('user'),
+            'action' => $this->router->url('api_room_tchat'),
         ];
 
-        $this->render('index.php', $data);
+        $template = 'index.html.twig';
+
+        if (!$this->layout) {
+            $template = '_messages.html.twig';
+        }
+
+        $this->renderTwig($template, $data);
     }
 
     /**
@@ -91,10 +97,54 @@ class TchatController extends Controller
      *
      * @throws \Exception
      */
-    public function refreshAction(array $params = [])
+    public function refreshMessagesAction(array $params = [])
     {
         $lastId = $params['lastId'];
 
+        $this->needAuthenticated();
+
+        $user       = $this->session->get('user');
+        $curlParams = ['user' => $user->id, 'date' => time(), 'lastId' => $lastId];
+
+        $curl = new  Curl();
+
+        foreach ($this->generateXWSSEHeaders() as $key => $header) {
+            $curl->setHeader($key, $header);
+        }
+
+        $url = $this->router->url('api_room_tchat_refresh', $curlParams, true);
+
+        $curl->get($url);
+        $messages = json_decode($curl->response, true);
+        $users = json_decode($this->refreshUsersAction($params, true));
+
+        /*
+        $apiController = new ApiController($this->app);
+        $messages = $apiController->refreshMessagesAction($curlParams, true);
+        $users = $apiController->refreshUsersAction($curlParams, true);
+        */
+
+        $data = [
+            'messages' => $messages,
+            'users'    => $users,
+        ];
+
+
+        if ($curl->http_status_code === 200) {
+            echo json_encode($data);
+            exit;
+        }
+    }
+
+    /**
+     * @param array $params
+     * @param bool  $getArrayData
+     *
+     * @return null
+     * @throws \Exception
+     */
+    public function refreshUsersAction(array $params = [], $getArrayData = false)
+    {
         $this->needAuthenticated();
 
         $curl = new  Curl();
@@ -105,11 +155,15 @@ class TchatController extends Controller
 
         $user = $this->session->get('user');
 
-        $curlParams = ['user' => $user->id, 'date' => time(), 'lastId' => $lastId];
+        $curlParams = ['user' => $user->id];
 
-        $url = $this->router->url('api_room_tchat_refresh', $curlParams, true);
+        $url = $this->router->url('api_room_users_refresh', $curlParams, true);
 
         $curl->get($url);
+
+        if ($getArrayData) {
+            return $curl->response;
+        }
 
         if ($curl->http_status_code === 200) {
             echo $curl->response;

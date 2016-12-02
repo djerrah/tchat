@@ -51,26 +51,46 @@ class Router
     public function init()
     {
         #FrontController
-        $this->get('home_page', '/', FrontController::class, 'indexAction');
+        $this
+            ->get('home_page', '/', FrontController::class, 'indexAction')
+        ;
 
         #UserController
-        $this->get('user_login', '/login', UserController::class, 'loginAction');
-        $this->post('user_login', '/login', UserController::class, 'loginAction');
+        $this
+            ->get('user_login', '/login', UserController::class, 'loginAction')
+        ;
+        $this
+            ->post('user_login', '/login', UserController::class, 'loginAction')
+        ;
 
-        $this->get('user_logout', '/logout', UserController::class, 'logoutAction');
+        $this->get('user_logout', '/logout', UserController::class, 'logoutAction')
+        ;
 
         #TchatController
-        $this->get('api_room_tchat', '/tchat', TchatController::class, 'indexAction');
-        $this->post('api_room_tchat', '/tchat', TchatController::class, 'indexAction');
         $this
-            ->get('api_room_tchat_front_refresh', '/refresh/:lastId', TchatController::class, 'refreshAction')
-            ->with('lastId', '[\d]+');
+            ->get('api_room_tchat', '/tchat', TchatController::class, 'indexAction')
+        ;
+        $this
+            ->post('api_room_tchat', '/tchat', TchatController::class, 'indexAction')
+        ;
+        $this
+            ->get('api_room_tchat_front_refresh', '/refresh/:lastId', TchatController::class, 'refreshMessagesAction')
+            ->with('lastId', '[\d]+')
+        ;
+       /* $this
+            ->get('api_room_users_front_refresh', '/refresh/users', TchatController::class, 'refreshUsersAction')
+        ;*/
 
         $this
-            ->get('api_room_tchat_refresh', '/api/tchat/:user-:lastId/:date', ApiController::class, 'refreshAction')
+            ->get('api_room_tchat_refresh', '/api/tchat/:user-:lastId/:date', ApiController::class, 'refreshMessagesAction')
             ->with('user', '[\d]+')
             ->with('lastId', '[\d]+')
             ->with('date', '[\d]+');
+
+        $this
+            ->get('api_room_users_refresh', '/api/tchat/users/:user', ApiController::class, 'refreshUsersAction')
+            ->with('user', '[\d]+')
+            ;
     }
 
     /**

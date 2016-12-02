@@ -60,6 +60,7 @@ class UserController extends Controller
             }
 
             if ($isValide) {
+                $bddUser->last_login = new \DateTime($bddUser->last_login);
                 $this->session->set('user', $bddUser);
             }
         }
@@ -72,7 +73,7 @@ class UserController extends Controller
         fin_de_scripte:
 
         $data['action'] = $homepage = $this->router->url('user_login');
-        $this->render('login.php', $data);
+        $this->renderTwig('login.html.twig', $data);
     }
 
 
@@ -83,7 +84,6 @@ class UserController extends Controller
      */
     public function logoutAction(array $params = [])
     {
-        $this->session->close();
         $homepage = $this->router->url('user_login');
 
         /**
@@ -94,6 +94,7 @@ class UserController extends Controller
         $criteria['id'] = $this->app->getSession()->get('user')->id;
         $data['online'] = 0;
         $userRepository->update($data, $criteria);
+        $this->session->close();
 
         header("Location: $homepage");
     }

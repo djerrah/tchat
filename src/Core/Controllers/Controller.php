@@ -97,6 +97,38 @@ class Controller
     }
 
     /**
+     * @param       $filename
+     * @param array $data
+     */
+    public function renderTwig($filename, array $data = [])
+    {
+
+        $data = array_merge(
+            $data,
+            [
+                'router' => $router = $this->app->getRooter()
+            ]
+        );
+
+        $calledClassFile = $this->urlConstructor(array_merge([ROOT_DIR, 'src'], explode("\\", get_called_class())));
+        $viewFolder      = $this->urlConstructor([dirname(dirname($calledClassFile)), 'Views']);
+
+        $paths = [
+            $viewFolder,
+            $this->urlConstructor([$viewFolder, $this->getClassName()])
+        ];
+
+        $loader = new \Twig_Loader_Filesystem($paths);
+        $twig   = new \Twig_Environment(
+            $loader, [
+                'cache' => ROOT_DIR . '/cache/twig',
+            ]
+        );
+
+        echo $twig->render($this->urlConstructor([$this->getClassName(), $filename]), $data);
+    }
+
+    /**
      * @param $paths
      *
      * @return string
